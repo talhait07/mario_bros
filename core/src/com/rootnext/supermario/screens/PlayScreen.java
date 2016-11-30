@@ -28,6 +28,7 @@ import com.rootnext.supermario.SuperMario;
 import com.rootnext.supermario.scenes.Hud;
 import com.rootnext.supermario.sprites.Mario;
 import com.rootnext.supermario.tools.B2WorldCreator;
+import com.rootnext.supermario.tools.WorldContacrListener;
 
 /**
  * Created by rootnext on 11/29/16.
@@ -65,6 +66,8 @@ public class PlayScreen implements Screen {
 
         world = new World(new Vector2(0,-10 ), true);
         mario = new Mario(world, this);
+
+        world.setContactListener(new WorldContacrListener());
 
         b2dr = new Box2DDebugRenderer();
         new B2WorldCreator(world, map);
