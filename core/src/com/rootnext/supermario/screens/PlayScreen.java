@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -38,6 +39,8 @@ public class PlayScreen implements Screen {
     private Viewport gamePort;
     private Hud hud;
 
+    private TextureAtlas atlas;
+
     private TmxMapLoader mapLoader;
     private TiledMap map;
     private OrthoCachedTiledMapRenderer renderer;
@@ -47,6 +50,8 @@ public class PlayScreen implements Screen {
     public Mario mario;
 
     public PlayScreen(SuperMario game){
+        atlas = new TextureAtlas("Mario_and_Enemies.pack");
+
         this.game = game;
         gameCam = new OrthographicCamera();
         gamePort = new FitViewport(SuperMario.V_WIDTH / SuperMario.PPM, SuperMario.V_HEIGHT / SuperMario.PPM,gameCam);
@@ -59,12 +64,15 @@ public class PlayScreen implements Screen {
         gameCam.position.set(gamePort.getWorldWidth() / 2, gamePort.getWorldHeight() / 2, 0);
 
         world = new World(new Vector2(0,-10 ), true);
-        mario = new Mario(world);
+        mario = new Mario(world, this);
 
         b2dr = new Box2DDebugRenderer();
-
         new B2WorldCreator(world, map);
 
+    }
+
+    public TextureAtlas getAtlas(){
+        return atlas;
     }
 
     public void handleInput(float dt){
@@ -82,6 +90,7 @@ public class PlayScreen implements Screen {
         handleInput(dt);
 
         world.step(1/60f, 6, 2);
+        mario.update(dt);
         gameCam.position.x = mario.b2body.getPosition().x;
         gameCam.update();
 
@@ -102,6 +111,11 @@ public class PlayScreen implements Screen {
 
         // render our Box2drender
         b2dr.render(world, gameCam.combined);
+
+        game.batch.setProjectionMatrix(gameCam.combined);
+        game.batch.begin();
+        mario.draw(game.batch);
+        game.batch.end();
 
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
