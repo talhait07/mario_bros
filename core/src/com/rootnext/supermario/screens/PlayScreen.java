@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.rootnext.supermario.SuperMario;
 import com.rootnext.supermario.scenes.Hud;
 import com.rootnext.supermario.sprites.Mario;
+import com.rootnext.supermario.tools.B2WorldCreator;
 
 /**
  * Created by rootnext on 11/29/16.
@@ -62,60 +63,7 @@ public class PlayScreen implements Screen {
 
         b2dr = new Box2DDebugRenderer();
 
-        BodyDef bdef = new BodyDef();
-        PolygonShape shape = new PolygonShape();
-        FixtureDef fdef = new FixtureDef();
-        Body body ;
-
-        for(MapObject object : map.getLayers().get(2).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2) / SuperMario.PPM, (rect.getY() + rect.getHeight() / 2) / SuperMario.PPM);
-
-            body = world.createBody(bdef);
-            shape.setAsBox((rect.getWidth() / 2) / SuperMario.PPM, (rect.getHeight() / 2) / SuperMario.PPM);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
-
-        //create pipe bodies/fixtures
-
-        for(MapObject object : map.getLayers().get(3).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2)/ SuperMario.PPM, (rect.getY() + rect.getHeight() / 2)/ SuperMario.PPM);
-
-            body = world.createBody(bdef);
-            shape.setAsBox((rect.getWidth() / 2)/ SuperMario.PPM, (rect.getHeight() / 2)/ SuperMario.PPM);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
-
-
-        //create brickes bodies/fixtures
-
-        for(MapObject object : map.getLayers().get(5).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2)/ SuperMario.PPM, (rect.getY() + rect.getHeight() / 2)/ SuperMario.PPM);
-
-            body = world.createBody(bdef);
-            shape.setAsBox((rect.getWidth() / 2)/ SuperMario.PPM, (rect.getHeight() / 2)/ SuperMario.PPM);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
-        //create coins bodies/fixtures
-
-        for(MapObject object : map.getLayers().get(4).getObjects().getByType(RectangleMapObject.class)){
-            Rectangle rect = ((RectangleMapObject) object).getRectangle();
-            bdef.type = BodyDef.BodyType.StaticBody;
-            bdef.position.set((rect.getX() + rect.getWidth() / 2)/ SuperMario.PPM, (rect.getY() + rect.getHeight() / 2)/ SuperMario.PPM);
-
-            body = world.createBody(bdef);
-            shape.setAsBox((rect.getWidth() / 2)/ SuperMario.PPM, (rect.getHeight() / 2)/ SuperMario.PPM);
-            fdef.shape = shape;
-            body.createFixture(fdef);
-        }
+        new B2WorldCreator(world, map);
 
     }
 
@@ -185,6 +133,11 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
+        map.dispose();
+        renderer.dispose();
+        world.dispose();
+        b2dr.dispose();
+        hud.dispose();
 
     }
 }
